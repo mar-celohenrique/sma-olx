@@ -14,6 +14,8 @@ public class Servico implements Serializable{
 	Integer valor;
 	Integer diasComecar;
 	Integer diasFInalizar;
+	Boolean concluido;
+	Integer diasDoncluido;
 
 	Integer[] valorEDias;
 
@@ -55,6 +57,22 @@ public class Servico implements Serializable{
 
 	public void setDiasFInalizar(Integer diasFInalizar) {
 		this.diasFInalizar = diasFInalizar;
+	}
+	
+	public Boolean getConcluido() {
+		return concluido;
+	}
+
+	public void setConcluido(Boolean concluido) {
+		this.concluido = concluido;
+	}
+
+	public Integer getDiasDoncluido() {
+		return diasDoncluido;
+	}
+
+	public void setDiasDoncluido(Integer diasDoncluido) {
+		this.diasDoncluido = diasDoncluido;
 	}
 
 	public Integer[] getValorEDias() {

@@ -7,6 +7,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import model.Reputacao;
 import model.Servico;
 
 public class RequisitarCompraBehavior extends Behaviour {
@@ -19,11 +20,14 @@ public class RequisitarCompraBehavior extends Behaviour {
 	private int passo = 0;
 	private Servico servico;
 	private int numeroRespostasAosVendedores = 0;
+	private AID reputacao;
+	private boolean servicoCompletado;
 
-	public RequisitarCompraBehavior(AID[] vendedores, Servico servico) {
+	public RequisitarCompraBehavior(AID[] vendedores, Servico servico, AID reputacao) {
 		super();
 		this.vendedores = vendedores;
 		this.servico = servico;
+		this.reputacao = reputacao;
 	}
 
 	@Override
@@ -103,7 +107,12 @@ public class RequisitarCompraBehavior extends Behaviour {
 				if (resposta.getPerformative() == ACLMessage.INFORM) {
 					System.out.println(servico.getServico() + " comprado de  " + resposta.getSender().getName());
 					System.out.println("Valor = " + melhorPreco);
-					myAgent.doDelete();
+					try {
+						this.servicoCompletado = ((Servico) resposta.getContentObject()).getConcluido();
+					} catch (UnreadableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} else {
 					System.out.println("Falha");
 				}
@@ -112,6 +121,28 @@ public class RequisitarCompraBehavior extends Behaviour {
 			} else {
 				block();
 			}
+			break;
+
+		case 4:
+			ACLMessage avaliacao = new ACLMessage(ACLMessage.INFORM_REF);
+			avaliacao.addReceiver(this.reputacao);
+			Reputacao reputacao = new Reputacao();
+			reputacao.setAgente(this.melhorVendedor);
+
+			if (servicoCompletado) {
+				reputacao.setAvaliacao(Reputacao.Avaliacao.POSITIVA);
+			} else {
+				reputacao.setAvaliacao(Reputacao.Avaliacao.NEGATIVA);
+			}
+			try {
+				avaliacao.setContentObject(reputacao);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			myAgent.send(avaliacao);
+			myAgent.doDelete();
+			myAgent.doDelete();
+			passo = 5;
 			break;
 
 		}
@@ -123,7 +154,7 @@ public class RequisitarCompraBehavior extends Behaviour {
 		if (passo == 2 && melhorVendedor == null) {
 			System.out.println("Falha: " + servico.getServico() + " indisponível.");
 		}
-		return ((passo == 2 && melhorVendedor == null) || passo == 4);
+		return ((passo == 2 && melhorVendedor == null) || passo == 5);
 	}
 
 }
