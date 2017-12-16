@@ -1,13 +1,13 @@
 package behaviors;
 
-import java.io.IOException;
-
 import agents.Vendedor;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import model.Servico;
+
+import java.io.IOException;
 
 public class RequisitarOfertaBehavior extends CyclicBehaviour {
 

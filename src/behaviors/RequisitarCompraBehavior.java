@@ -1,7 +1,5 @@
 package behaviors;
 
-import java.io.IOException;
-
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -10,6 +8,10 @@ import jade.lang.acl.UnreadableException;
 import model.Reputacao;
 import model.Servico;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RequisitarCompraBehavior extends Behaviour {
 
 	private static final long serialVersionUID = -4197249070066687719L;
@@ -17,11 +19,12 @@ public class RequisitarCompraBehavior extends Behaviour {
 	private AID melhorVendedor;
 	private int melhorPreco;
 	private MessageTemplate mt;
-	private int passo = 0;
+	private int passo = -1;
 	private Servico servico;
 	private int numeroRespostasAosVendedores = 0;
 	private AID reputacao;
 	private boolean servicoCompletado;
+	private Map<AID, Reputacao> reputacoes = new HashMap<>();
 
 	public RequisitarCompraBehavior(AID[] vendedores, Servico servico, AID reputacao) {
 		super();
@@ -33,6 +36,27 @@ public class RequisitarCompraBehavior extends Behaviour {
 	@Override
 	public void action() {
 		switch (passo) {
+		case -2:
+			// Requisitando reputacao
+			ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+			message.addReceiver(reputacao);
+			myAgent.send(message);
+			passo = -1;
+			break;
+		case -1:
+			// Recebendo reputacoes
+			MessageTemplate respostaReputacoes = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			ACLMessage msg = myAgent.receive(respostaReputacoes);
+
+			if (null != msg) {
+				try {
+					reputacoes = (Map<AID, Reputacao>) msg.getContentObject();
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
+			}
+			passo = 0;
+			break;
 		case 0:
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 			for (int i = 0; i < vendedores.length; ++i) {
@@ -70,8 +94,12 @@ public class RequisitarCompraBehavior extends Behaviour {
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
-
-					if (melhorVendedor == null || servico.getValor() < melhorPreco) {
+					
+					//Analisando preço e reputação do vendedor
+					if (melhorVendedor == null || servico.getValor() < melhorPreco
+							|| ((reputacoes.get(resposta.getSender()).getPositiva() / 100)
+									* reputacoes.get(resposta.getSender()).getNegativa()
+									+ reputacoes.get(resposta.getSender()).getPositiva()) > 0.5) {
 						melhorPreco = servico.getValor();
 						melhorVendedor = resposta.getSender();
 					}

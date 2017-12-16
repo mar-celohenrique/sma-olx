@@ -6,10 +6,11 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import model.Servico;
+import util.DescobrirReputacao;
 
 public class Comprador extends Agent {
 
@@ -57,25 +58,10 @@ public class Comprador extends Agent {
                     }
 
 
-                    // Atualizando a lista de agentes reputacao
-                    DFAgentDescription templateReputacao = new DFAgentDescription();
-                    ServiceDescription sdReputacao = new ServiceDescription();
-                    sdReputacao.setType("reputacao");
-                    templateReputacao.addServices(sdReputacao);
 
-                    AID reputacao = new AID();
-
-                    try {
-                        DFAgentDescription[] result = DFService.search(myAgent, templateReputacao);
-                        for (int i = 0; i < result.length; ++i) {
-                            reputacao = result[i].getName();
-                        }
-                    } catch (FIPAException fe) {
-                        fe.printStackTrace();
-                    }
                     
                     // Adicionando behavior personalizado do comprador
-                    myAgent.addBehaviour(new RequisitarCompraBehavior(vendedores, servico, reputacao));
+                    myAgent.addBehaviour(new RequisitarCompraBehavior(vendedores, servico, DescobrirReputacao.reputacao(myAgent)));
                 }
             });
         } else {

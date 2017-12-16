@@ -1,21 +1,19 @@
 package main;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import agents.AgenteReputacaoCentralizada;
 import agents.Comprador;
 import agents.Vendedor;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
-import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import model.Servico;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Main {
 
@@ -52,7 +50,7 @@ public class Main {
 
 	private static Runtime emptyPlatform(HashMap<String, ContainerController> containerList) {
 
-		Runtime rt = Runtime.instance();
+		Runtime rt = Runtime.getRuntime();
 
 		// 1) create a platform (main container+DF+AMS)
 		Profile pMain = new ProfileImpl(hostname, 8888, null);

@@ -1,16 +1,10 @@
 package ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import jade.lang.acl.ACLMessage;
 import model.Servico;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 public class TelaConfirmacaoCompra extends JFrame{

@@ -1,8 +1,5 @@
 package behaviors;
 
-import java.io.IOException;
-import java.util.Random;
-
 import agents.Vendedor;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -10,6 +7,9 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import model.Reputacao;
 import model.Servico;
+
+import java.io.IOException;
+import java.util.Random;
 
 public class EncerrarTransacaoBehavior extends CyclicBehaviour {
 
